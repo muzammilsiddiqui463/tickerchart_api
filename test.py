@@ -1,4 +1,4 @@
 import requests
 
-r = requests.get("http://127.0.0.1:8000/data/")
+r = requests.get("https://web-production-8a109.up.railway.app/data/")
 print(r.json())
