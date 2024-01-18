@@ -11,6 +11,6 @@ urlpatterns = [
     path('start/', start_, name='start'),
     path('stop/', stop_, name='stop'),
 ]
-print("started")
-s = threading.Thread(target=scraper.run_process)
-s.start()
+# print("started")
+# s = threading.Thread(target=scraper.run_process)
+# s.start()
