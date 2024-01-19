@@ -120,7 +120,7 @@ import os
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/home/muzammil/ticketchart_project/tickerchart_api/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # STATICFILES_STORAGE="whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
