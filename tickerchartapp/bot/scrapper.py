@@ -29,6 +29,7 @@ class Scraper:
         # driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH")
 
         # Initialize the WebDriver with Chrome options
+        #
         self.driver = uc.Chrome(options=chrome_options)
         self.driver.maximize_window()
         self.driver.get("https://www.tickerchart.net/app/en#")
