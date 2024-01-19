@@ -23,11 +23,11 @@ class Scraper:
         chrome_options = Options()
         # chrome_options.add_argument('--headless')  # Run Chrome in headless mode
         # chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--no-sandbox")
         # driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH")
-    
+
         # Initialize the WebDriver with Chrome options
         self.driver = uc.Chrome(options=chrome_options)
         self.driver.maximize_window()
@@ -70,7 +70,7 @@ class Scraper:
         # self.driver.execute_script("document.body.style.zoom='25%'")
         actions = ActionChains(self.driver)
     
-        time.sleep(3)
+        time.sleep(4)
         # input("???")
         # self.driver.execute_script("document.body.style.zoom='25%'")
         try:
@@ -86,7 +86,7 @@ class Scraper:
         time.sleep(4)
         self.driver.execute_script("document.body.style.zoom='25%'")
         self.driver.save_screenshot("img.png")
-        wait = WebDriverWait(self.driver, 25)
+        wait = WebDriverWait(self.driver, 100)
         wait.until(EC.presence_of_element_located((By.XPATH, '//div[@title="Symbol"]')))
     
         # self.driver.find_element(By.XPATH, '//div[@title="Symbol"]').click()
