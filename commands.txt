@@ -1,0 +1,2 @@
+celery -A tickerchart worker --loglevel=info
+celery -A tickerchart beat --loglevel=info

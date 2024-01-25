@@ -85,6 +85,19 @@ DATABASES = {
 }
 
 
+# # Celery configuration
+# CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost//'
+# CELERY_RESULT_BACKEND = 'rpc://'
+#
+# # Celery Beat configuration
+# CELERY_BEAT_SCHEDULE = {
+#     'run-every-5-seconds': {
+#         'task': 'tickerchartapp.tasks.my_periodic_function',
+#         'schedule': 5.0,  # Run every 5 seconds
+#     },
+# }
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
