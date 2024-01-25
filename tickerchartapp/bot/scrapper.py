@@ -67,6 +67,7 @@ class Scraper:
             print(error)
 
     def table_data(self):
+
         wait = WebDriverWait(self.driver, 30)
         # self.driver.execute_script("document.body.style.zoom='25%'")
         actions = ActionChains(self.driver)
@@ -92,7 +93,7 @@ class Scraper:
     
         # self.driver.find_element(By.XPATH, '//div[@title="Symbol"]').click()
         history=[]
-        while True:
+        if True:
             try:
                 for i in range(0,2):
                     rows = self.driver.find_elements(By.XPATH, "//marketwatch//div[@class='grid-canvas']//div[contains(@class,'slick-row')]")
@@ -115,7 +116,7 @@ class Scraper:
                         actions.send_keys_to_element(scroll,Keys.PAGE_DOWN).perform()
                         # time.sleep(0.2)
             except:
-                break
+                return False
 
     
             # input()
@@ -145,5 +146,16 @@ class Scraper:
     def run_process(self):
         self.start_browser()
         self.login()
-        self.table_data()
+        self.output = True
+        while True:
+            self.output = self.table_data()
+            if self.output==False:
+                try:
+                    self.driver.close()
+                except:
+                    pass
+                self.start_browser()
+                self.login()
+            time.sleep(0.5)
+
 
