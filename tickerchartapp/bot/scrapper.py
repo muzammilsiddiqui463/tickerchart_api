@@ -110,6 +110,7 @@ class Scraper:
         if True:
             try:
                 last_length = 0
+                self.driver.save_screenshot("table.png")
                 for i in range(0, 3):
                     rows = self.driver.find_elements(By.XPATH,
                                                      "//marketwatch//div[@class='grid-canvas']//div[contains(@class,'slick-row')]")
