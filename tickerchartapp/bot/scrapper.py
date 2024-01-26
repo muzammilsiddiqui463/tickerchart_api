@@ -14,7 +14,6 @@ from ..host import HOST_URL
 import pickle
 import os
 
-
 class Scraper:
     
     def start_browser(self):
@@ -100,45 +99,78 @@ class Scraper:
     
         # self.driver.find_element(By.XPATH, '//div[@title="Symbol"]').click()
     def table_data(self):
+        results = []
+        def sub_process(row_data):
+
+
+            try:
+                # if row_data.text.split('\n') in history:
+                #     return
+                # else:
+                #     # print(row.text.split('\n'))
+                results.append(row_data.text.split('\n'))
+                return row_data.text.split('\n')
+            except Exception as e:
+                print(e)
+                pass
         wait = WebDriverWait(self.driver, 30)
         # self.driver.execute_script("document.body.style.zoom='25%'")
         actions = ActionChains(self.driver)
-        history = []
+
         print("Fetching Data")
         if True:
             try:
                 last_length = 0
                 self.driver.save_screenshot("table.png")
-                for i in range(0, 3):
+                scroll = self.driver.find_element(By.XPATH, "//div[@class='slick-viewport']")
+                # Get the initial height of the scrollable element
+                initial_height = self.driver.execute_script("return arguments[0].scrollHeight;", scroll)
+
+                # Get the current height of the scrollable element
+                # current_height = 999999
+                # print(initial_height,'===intial heigh')
+                # print(current_height,"==current height")
+                for _ in range(0,2):
+                    # initial_height = current_height
                     rows = self.driver.find_elements(By.XPATH,
                                                      "//marketwatch//div[@class='grid-canvas']//div[contains(@class,'slick-row')]")
-                    if len(rows)==last_length:
-                        break
-                    last_length = len(rows)
+                    print(len(rows))
+                    threads  =[]
                     for row in rows:
-                        try:
-                            if row.text.split('\n') in history:
-                                continue
-                            else:
-                                # print(row.text.split('\n'))
-                                history.append(row.text.split('\n'))
-                        except:
-                            pass
-                    # scroll
+                        s = threading.Thread(target=sub_process,args=(row,))
+                        threads.append(s)
 
-                    scroll = self.driver.find_element(By.XPATH, "//div[@class='slick-viewport']")
+
+                        # try:
+                        #     if row.text.split('\n') in history:
+                        #         continue
+                        #     else:
+                        #         # print(row.text.split('\n'))
+                        #         history.append(row.text.split('\n'))
+                        # except:
+                        #     pass
+                    # scroll
+                    for t in threads:
+                        t.start()
+                        # time.sleep(0.1)
+                    for t in threads:
+                        t.join()
+
+
                     # current_scroll_position = self.driver.execute_script("return window.scrollY")
                     # self.driver.execute_script("window.scrollTo(0, window.scrollY + 2000)")
                     # new_scroll_position = self.driver.execute_script("return window.scrollY")
-                    for _ in range(1):
-                        actions.send_keys_to_element(scroll, Keys.PAGE_DOWN).perform()
-                        time.sleep(0.2)
-            except:
+                    actions.send_keys_to_element(scroll, Keys.PAGE_DOWN).perform()
+                    time.sleep(3)
+                    # current_height = self.driver.execute_script("return arguments[0].scrollHeight;", scroll)
+            except Exception as e:
+                print(e)
                 return False
 
             # input()
             all_data = []
-            for element in history:
+            print(len(results),"==results")
+            for element in results:
                 try:
                     # print(element)
                     # print(element)
@@ -149,6 +181,7 @@ class Scraper:
                     all_data.append(data)
                     # add = requests.post("http://127.0.0.1:8000/data/", data=data).json()
                 except:
+                    print(element)
                     pass
 
             def add_delete(all_data):
