@@ -1,4 +1,5 @@
 # tickerchartapp/views.py
+import time
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -54,6 +55,9 @@ def start_(request):
     global scraper
     s = threading.Thread(target=scraper.run_process)
     s.start()
+    # time.sleep(2)
+    # s = threading.Thread(target=scraper.run_process)
+    # s.start()
     # Return a JSON response indicating the process has started
     return JsonResponse({'message': 'Process started successfully'})
 

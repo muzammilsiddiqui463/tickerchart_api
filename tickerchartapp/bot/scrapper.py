@@ -11,6 +11,7 @@ from selenium.webdriver.chrome.options import Options
 import undetected_chromedriver as uc
 import requests
 from ..host import HOST_URL
+import pickle
 import os
 
 
@@ -23,7 +24,7 @@ class Scraper:
         chrome_options = Options()
         # chrome_options.add_argument('--headless')  # Run Chrome in headless mode
         # chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--no-sandbox")
         # driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH")
@@ -35,6 +36,8 @@ class Scraper:
         self.driver.get("https://www.tickerchart.net/app/en#")
         self.wait = WebDriverWait(self.driver, 25)
         self.actions = ActionChains(self.driver)
+        return False
+
 
     def close_browser(self):
         self.driver.close()
@@ -63,10 +66,17 @@ class Scraper:
             password = self.driver.find_element(By.XPATH, '//input[@name="password"]')
             password.clear()
             password.send_keys("saad", Keys.ENTER)
+            time.sleep(5)
+            # Get the cookies
+            cookies = self.driver.get_cookies()
+
+            # Save the cookies to a file using pickle
+            with open('cookies.pkl', 'wb') as file:
+                pickle.dump(cookies, file)
         except Exception as error:
             print(error)
 
-    def table_data(self):
+    def setup(self):
 
         wait = WebDriverWait(self.driver, 30)
         # self.driver.execute_script("document.body.style.zoom='25%'")
@@ -81,7 +91,7 @@ class Scraper:
             actions.move_to_element(elem).click().perform()
             time.sleep(10)
         except Exception as e:
-            print(e)
+            # print(e)
             print("not found")
             pass
         self.driver.refresh()
@@ -92,11 +102,20 @@ class Scraper:
         wait.until(EC.presence_of_element_located((By.XPATH, '//div[@title="Symbol"]')))
     
         # self.driver.find_element(By.XPATH, '//div[@title="Symbol"]').click()
-        history=[]
+    def table_data(self):
+        wait = WebDriverWait(self.driver, 30)
+        # self.driver.execute_script("document.body.style.zoom='25%'")
+        actions = ActionChains(self.driver)
+        history = []
         if True:
             try:
-                for i in range(0,2):
-                    rows = self.driver.find_elements(By.XPATH, "//marketwatch//div[@class='grid-canvas']//div[contains(@class,'slick-row')]")
+                last_length = 0
+                for i in range(0, 6):
+                    rows = self.driver.find_elements(By.XPATH,
+                                                     "//marketwatch//div[@class='grid-canvas']//div[contains(@class,'slick-row')]")
+                    if len(rows)==last_length:
+                        break
+                    last_length = len(rows)
                     for row in rows:
                         try:
                             if row.text.split('\n') in history:
@@ -106,19 +125,18 @@ class Scraper:
                                 history.append(row.text.split('\n'))
                         except:
                             pass
-                    #scroll
+                    # scroll
 
                     scroll = self.driver.find_element(By.XPATH, "//div[@class='slick-viewport']")
                     # current_scroll_position = self.driver.execute_script("return window.scrollY")
                     # self.driver.execute_script("window.scrollTo(0, window.scrollY + 2000)")
                     # new_scroll_position = self.driver.execute_script("return window.scrollY")
                     for _ in range(1):
-                        actions.send_keys_to_element(scroll,Keys.PAGE_DOWN).perform()
-                        # time.sleep(0.2)
+                        actions.send_keys_to_element(scroll, Keys.PAGE_DOWN).perform()
+                        time.sleep(0.2)
             except:
                 return False
 
-    
             # input()
             all_data = []
             for element in history:
@@ -126,17 +144,20 @@ class Scraper:
                     # print(element)
                     # print(element)
                     # print(f"Symobol: {element[0]}, Close: {element[2]}, Open: {element[4]}, High: {element[5]}, Low: {element[6]}, Volume: {element[7]}")
-                    data = {"Symbol": element[0], "close": element[2], "open": element[4], "high": element[5], "low": element[6], "volume": element[7]}
-                    print(data)
+                    data = {"Symbol": element[0], "close": element[2], "open": element[4], "high": element[5],
+                            "low": element[6], "volume": element[7]}
+                    # print(data)
                     all_data.append(data)
                     # add = requests.post("http://127.0.0.1:8000/data/", data=data).json()
                 except:
                     pass
+
             def add_delete(all_data):
                 delete_data = requests.delete(f"{HOST_URL}data/")
                 add = requests.post(f"{HOST_URL}data/", json=all_data)
-                print(add.json())
-            s = threading.Thread(target=add_delete,args=(all_data,))
+                # print(add.json())
+            print(len(all_data),"===all data")
+            s = threading.Thread(target=add_delete, args=(all_data,))
             s.start()
 
             for j in range(0, 3):
@@ -144,8 +165,10 @@ class Scraper:
             history = []
 
     def run_process(self):
-        self.start_browser()
-        self.login()
+        cookie = self.start_browser()
+        if cookie == False:
+            self.login()
+        self.setup()
         self.output = True
         while True:
             self.output = self.table_data()
@@ -156,6 +179,7 @@ class Scraper:
                     pass
                 self.start_browser()
                 self.login()
+                self.setup()
             time.sleep(0.5)
 
 
