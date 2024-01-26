@@ -110,7 +110,7 @@ class Scraper:
         if True:
             try:
                 last_length = 0
-                for i in range(0, 6):
+                for i in range(0, 3):
                     rows = self.driver.find_elements(By.XPATH,
                                                      "//marketwatch//div[@class='grid-canvas']//div[contains(@class,'slick-row')]")
                     if len(rows)==last_length:
