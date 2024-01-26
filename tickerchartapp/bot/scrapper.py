@@ -45,6 +45,7 @@ class Scraper:
     def login(self):
         # input("login?")
         wait = WebDriverWait(self.driver, 40)
+        print("login into account")
         try:
             # try:
             #     wait.until(EC.element_to_be_clickable((By.XPATH, '//a[@class="close-btn"]')))
@@ -67,17 +68,12 @@ class Scraper:
             password.clear()
             password.send_keys("saad", Keys.ENTER)
             time.sleep(5)
-            # Get the cookies
-            cookies = self.driver.get_cookies()
-
-            # Save the cookies to a file using pickle
-            with open('cookies.pkl', 'wb') as file:
-                pickle.dump(cookies, file)
+            print("Login DONE")
         except Exception as error:
             print(error)
 
     def setup(self):
-
+        print("Setting up things...")
         wait = WebDriverWait(self.driver, 30)
         # self.driver.execute_script("document.body.style.zoom='25%'")
         actions = ActionChains(self.driver)
@@ -92,7 +88,7 @@ class Scraper:
             time.sleep(10)
         except Exception as e:
             # print(e)
-            print("not found")
+            print("Popup Not Found")
             pass
         self.driver.refresh()
         time.sleep(4)
@@ -100,6 +96,7 @@ class Scraper:
         self.driver.save_screenshot("img.png")
         wait = WebDriverWait(self.driver, 100)
         wait.until(EC.presence_of_element_located((By.XPATH, '//div[@title="Symbol"]')))
+        print("Setup Done")
     
         # self.driver.find_element(By.XPATH, '//div[@title="Symbol"]').click()
     def table_data(self):
@@ -107,6 +104,7 @@ class Scraper:
         # self.driver.execute_script("document.body.style.zoom='25%'")
         actions = ActionChains(self.driver)
         history = []
+        print("Fetching Data")
         if True:
             try:
                 last_length = 0
